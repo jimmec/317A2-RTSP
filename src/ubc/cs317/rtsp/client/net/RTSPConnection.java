@@ -56,8 +56,6 @@ public class RTSPConnection {
    private BufferedWriter rtspWriter;
    private DatagramSocket dataSocket;
 
-   // TODO Add additional fields, if necessary
-
    /**
     * Establishes a new connection with an RTSP server. No message is sent at
     * this point, and no stream is set up.
@@ -285,8 +283,20 @@ public class RTSPConnection {
     *            if the server did not return a successful response.
     */
    public synchronized void teardown() throws RTSPException {
-
-      // TODO
+      if (sessionState == State.INIT) {
+         return;
+      }
+      try {
+         sendCommand("TEARDOWN " + sessionVid, sessionId, null);
+         RTSPResponse resp = RTSPResponse.readRTSPResponse(rtspReader);
+         checkRespSuccessful(resp);
+         rtpTimer.cancel();
+         dataSocket.close();
+         dataSocket = null;
+         setState(State.INIT);
+      } catch (IOException e) {
+         throw new RTSPException("Unable to complete TEARDOWN request: " + e.getMessage(), e);
+      }
    }
 
    /**
@@ -295,7 +305,29 @@ public class RTSPConnection {
     * connection, if it is still open.
     */
    public synchronized void closeConnection() {
-      // TODO
+      if (sessionState != State.INIT) {
+         try {
+            teardown();
+         } catch (RTSPException e) {
+
+         }
+         rtpTimer.cancel();
+         if (dataSocket != null) {
+            dataSocket.close();
+            dataSocket = null;
+         }
+      }
+      try {
+         rtspReader.close();
+         rtspWriter.close();
+         rtspSocket.close();
+      } catch (IOException e) {
+
+      } finally {
+         rtspReader = null;
+         rtspWriter = null;
+         rtspSocket = null;
+      }
    }
 
    /**
