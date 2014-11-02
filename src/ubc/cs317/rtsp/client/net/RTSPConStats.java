@@ -3,10 +3,12 @@ package ubc.cs317.rtsp.client.net;
 import java.util.ArrayList;
 import java.util.List;
 
+import ubc.cs317.rtsp.client.model.Frame;
 import ubc.cs317.rtsp.client.model.SessionStat;
+import ubc.cs317.rtsp.util.SimpleCircularBuffer;
 
 /**
- * This class tracks playback statistics of an entire RTSP connection,
+ * This class helps track playback statistics of an entire RTSP connection,
  * organized by each individual session. <br/>
  * Each time a newSession is created, all stats tracking is done against the latest session.
  * 
@@ -14,7 +16,9 @@ import ubc.cs317.rtsp.client.model.SessionStat;
  *
  */
 public class RTSPConStats {
-   List<SessionStat> sessions;
+   private List<SessionStat> sessions;
+   private SimpleCircularBuffer<Short> recentFrameSeqs;
+   private SimpleCircularBuffer<Integer> recentFrameTimestamps;
 
    public RTSPConStats() {
       sessions = new ArrayList<SessionStat>();
@@ -46,20 +50,18 @@ public class RTSPConStats {
       latest().pausePlay();
    }
 
-   public void newRequest() {
-      latest().cseq++;
+   public void setRequestCount(int count) {
+      latest().cseq = count;
    }
 
-   public void framePlayed() {
+   /**
+    * Call this each we process a new Frame. It will attempt to record the relevant stats.
+    * 
+    * @param f
+    *           the newest processed Frame.
+    */
+   public void newFrame(Frame f) {
       latest().framesPlayed++;
-   }
-
-   public void frameLost() {
-      latest().framesLost++;
-   }
-
-   public void frameOutOrder() {
-      latest().framesOutOfOrder++;
    }
 
    private SessionStat latest() {

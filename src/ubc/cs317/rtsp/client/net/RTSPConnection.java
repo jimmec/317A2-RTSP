@@ -46,6 +46,7 @@ public class RTSPConnection {
    private static final long MINIMUM_DELAY_READ_PACKETS_MS = 20;
 
    private Session session;
+   private RTSPConStats stat;
    private State sessionState;
    private int cseq;
    private String sessionId;
@@ -73,6 +74,7 @@ public class RTSPConnection {
    public RTSPConnection(Session session, final String server, final int port) throws RTSPException {
 
       this.session = session;
+      stat = new RTSPConStats();
 
       // Try to establish control connection to server within a timeout
       try {
@@ -97,38 +99,6 @@ public class RTSPConnection {
                CON_ATTEMPT_TIMEOUT), e2);
       }
       setState(State.INIT);
-   }
-
-   /**
-    * Helper to keep RTSP Session state. Encapsulates all state handling logic.
-    * 
-    * @param desiredState
-    * @throws RTSPException
-    */
-   private void setState(State desiredState) throws RTSPException {
-      switch (desiredState) {
-      case INIT: {
-         sessionState = State.INIT;
-         sessionVid = null;
-         cseq = 0;
-         try {
-            rtspReader = new BufferedReader(new InputStreamReader(rtspSocket.getInputStream()));
-            rtspWriter = new BufferedWriter(new OutputStreamWriter(rtspSocket.getOutputStream()));
-         } catch (IOException e) {
-            throw new RTSPException("Cannot get input/output from/to server!", e);
-         }
-         break;
-      }
-      case READY: {
-         sessionState = State.READY;
-         break;
-      }
-      case PLAYING: {
-         sessionState = State.PLAYING;
-         break;
-      }
-      }
-
    }
 
    /**
@@ -172,6 +142,7 @@ public class RTSPConnection {
          sessionId = resp.getHeaderValue("SESSION");
          sessionVid = videoName;
          setState(State.READY);
+         stat.newSession(sessionId, videoName);
       } catch (IOException e) {
          throw new RTSPException("Failed to read SETUP request response: " + e.getMessage(), e);
       }
@@ -327,6 +298,37 @@ public class RTSPConnection {
          rtspReader = null;
          rtspWriter = null;
          rtspSocket = null;
+      }
+   }
+
+   /**
+    * Helper to keep RTSP Session state. Encapsulates all state handling logic.
+    * 
+    * @param desiredState
+    * @throws RTSPException
+    */
+   private void setState(State desiredState) throws RTSPException {
+      switch (desiredState) {
+      case INIT: {
+         sessionState = State.INIT;
+         sessionVid = null;
+         cseq = 0;
+         try {
+            rtspReader = new BufferedReader(new InputStreamReader(rtspSocket.getInputStream()));
+            rtspWriter = new BufferedWriter(new OutputStreamWriter(rtspSocket.getOutputStream()));
+         } catch (IOException e) {
+            throw new RTSPException("Cannot get input/output from/to server!", e);
+         }
+         break;
+      }
+      case READY: {
+         sessionState = State.READY;
+         break;
+      }
+      case PLAYING: {
+         sessionState = State.PLAYING;
+         break;
+      }
       }
    }
 
