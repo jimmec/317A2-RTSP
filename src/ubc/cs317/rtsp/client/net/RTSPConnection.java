@@ -98,7 +98,7 @@ public class RTSPConnection {
                port,
                CON_ATTEMPT_TIMEOUT), e2);
       }
-      setSate(State.INIT);
+      setState(State.INIT);
    }
 
    /**
@@ -107,7 +107,7 @@ public class RTSPConnection {
     * @param desiredState
     * @throws RTSPException
     */
-   private void setSate(State desiredState) throws RTSPException {
+   private void setState(State desiredState) throws RTSPException {
       switch (desiredState) {
       case INIT: {
          sessionState = State.INIT;
@@ -122,10 +122,12 @@ public class RTSPConnection {
          break;
       }
       case READY: {
+         sessionState = State.READY;
          break;
       }
       case PLAYING: {
-
+         sessionState = State.PLAYING;
+         break;
       }
       }
 
@@ -171,6 +173,7 @@ public class RTSPConnection {
          checkRespSuccessful(resp);
          sessionId = resp.getHeaderValue("SESSION");
          sessionVid = videoName;
+         setState(State.READY);
       } catch (IOException e) {
          throw new RTSPException("Failed to read SETUP request response: " + e.getMessage(), e);
       }
@@ -187,6 +190,9 @@ public class RTSPConnection {
     *            if the server did not return a successful response.
     */
    public synchronized void play() throws RTSPException {
+      if (sessionState != State.READY) {
+         return;
+      }
       try {
          sendCommand("PLAY " + sessionVid, sessionId, null);
       } catch (IOException e) {
@@ -196,6 +202,7 @@ public class RTSPConnection {
          RTSPResponse resp = RTSPResponse.readRTSPResponse(rtspReader);
          checkRespSuccessful(resp);
          startRTPTimer();
+         setState(State.PLAYING);
       } catch (IOException e) {
          throw new RTSPException("Failed to read PLAY request response: " + e.getMessage(), e);
       }
@@ -250,8 +257,18 @@ public class RTSPConnection {
     *            if the server did not return a successful response.
     */
    public synchronized void pause() throws RTSPException {
-
-      // TODO
+      if (sessionState != State.PLAYING) {
+         return;
+      }
+      try {
+         sendCommand("PAUSE " + sessionVid, sessionId, null);
+         RTSPResponse resp = RTSPResponse.readRTSPResponse(rtspReader);
+         checkRespSuccessful(resp);
+         rtpTimer.cancel();
+         setState(State.READY);
+      } catch (IOException e) {
+         throw new RTSPException("Cannot send PAUSE request: " + e.getMessage(), e);
+      }
    }
 
    /**
