@@ -212,6 +212,7 @@ public class RTSPConnection {
          stat.newFrame(frame);
       } catch (SocketTimeoutException e2) {
          // Do nothing on timeouts
+         stat.lostFrame();
       } catch (IOException e) {
          // e.printStackTrace();
       }

@@ -73,10 +73,29 @@ public class RTSPConStats {
    public void newFrame(Frame f) {
       recentFrameSeqs.add(f.getSequenceNumber());
       recentFrameTimestamps.add(Long.valueOf(Integer.toBinaryString(f.getTimestamp()), 2));
-      Short[] sView = recentFrameSeqs.getView();
       Long[] tView = recentFrameTimestamps.getView();
       currSesh.framesPlayed++;
       checkFrameOrder(tView);
+      checkLostFrame(tView);
+   }
+
+   /**
+    * Helper that will try to determine whether or not the we've lost a frame, based on recent Frames timestamps.
+    * 
+    * @param tView
+    *           a view of the frame timestamps as retrieved from the SimpleCircularBuffer
+    */
+   private void checkLostFrame(Long[] tView) {
+      int n = tView.length;
+      // Say we have lost a frame if the newest frame's timestamp is 2+ frames ahead of the previously received
+      // based on observation that the gap between each frame on a normal stream is 8000000
+      if (n >= 2 && tView[n - 1] > tView[n - 2] + 17000000) {
+         currSesh.framesLost++;
+      }
+   }
+
+   public void lostFrame() {
+      currSesh.framesLost++;
    }
 
    /**
@@ -103,11 +122,13 @@ public class RTSPConStats {
          System.out.println(String.format("ID: %s, %s", s.id, s.videoName));
          System.out.println(String.format("Total requests: %d", s.cseq));
          System.out.println(String.format("Total frames: %d", s.framesPlayed));
-         System.out.println(String.format("Frames out of order: %d", s.framesOutOfOrder));
-         System.out.println(String.format("Frames lost: %d", s.framesLost));
-         System.out.println(String.format("Playback length (ms): %d", s.playbackLength));
          System.out.println(String.format("Avg framerate (f/s): %f", (double) s.framesPlayed
                / (s.playbackLength / 1000)));
+         System.out.println(String.format("Frames out of order: %d", s.framesOutOfOrder));
+         System.out.println(String.format("Frames lost: %d", s.framesLost));
+         System.out.println(String.format("Avg frame loss rate (f/s): %f", (double) s.framesLost
+               / (s.playbackLength / 1000)));
+         System.out.println(String.format("Playback length (ms): %d", s.playbackLength));
          System.out.println(String.format("Session length (ms): %d", s.endTime.getTime() - s.startTime.getTime()));
          System.out.println(String.format("==============End time: %s==============", s.endTime.toString()));
          System.out.println();
