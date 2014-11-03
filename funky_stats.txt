@@ -1,0 +1,127 @@
+Stats: 
+
+Reg
+==============Start time: Mon Nov 03 00:46:11 PST 2014==============
+ID: 896380, m
+Total requests: 3
+Total frames: 242
+Avg framerate (f/s): 30.250000
+Frames out of order: 1
+Avg frame out order rate (f/s): 0.125000
+Frames lost: 1
+Avg frame loss rate (f/s): 0.125000
+Playback length (ms): 8500
+Session length (ms): 10541
+==============End time: Mon Nov 03 00:46:21 PST 2014==============
+
+A
+==============Start time: Mon Nov 03 00:45:22 PST 2014==============
+ID: 109268, m
+Total requests: 3
+Total frames: 235
+Avg framerate (f/s): 26.111111
+Frames out of order: 37
+Avg frame out order rate (f/s): 4.111111
+Frames lost: 1
+Avg frame loss rate (f/s): 0.111111
+Playback length (ms): 9480
+Session length (ms): 12072
+==============End time: Mon Nov 03 00:45:34 PST 2014==============
+
+B
+==============Start time: Mon Nov 03 00:44:35 PST 2014==============
+ID: 607269, m
+Total requests: 3
+Total frames: 153
+Avg framerate (f/s): 19.125000
+Frames out of order: 57
+Avg frame out order rate (f/s): 7.125000
+Frames lost: 23
+Avg frame loss rate (f/s): 2.875000
+Playback length (ms): 8540
+Session length (ms): 11300
+==============End time: Mon Nov 03 00:44:46 PST 2014==============
+
+C
+==============Start time: Mon Nov 03 00:35:50 PST 2014==============
+ID: 896784, m
+Total requests: 3
+Total frames: 236
+Avg framerate (f/s): 29.500000
+Frames out of order: 122
+Avg frame out order rate (f/s): 15.250000
+Frames lost: 54
+Avg frame loss rate (f/s): 6.750000
+Playback length (ms): 8320
+Session length (ms): 11402
+==============End time: Mon Nov 03 00:36:01 PST 2014==============
+
+D
+==============Start time: Mon Nov 03 00:36:13 PST 2014==============
+ID: 335353, m
+Total requests: 3
+Total frames: 122
+Avg framerate (f/s): 15.250000
+Frames out of order: 102
+Avg frame out order rate (f/s): 12.750000
+Frames lost: 52
+Avg frame loss rate (f/s): 6.500000
+Playback length (ms): 8720
+Session length (ms): 11212
+==============End time: Mon Nov 03 00:36:24 PST 2014==============
+
+E
+==============Start time: Mon Nov 03 00:36:36 PST 2014==============
+ID: 566359, m
+Total requests: 3
+Total frames: 182
+Avg framerate (f/s): 60.666667
+Frames out of order: 153
+Avg frame out order rate (f/s): 51.000000
+Frames lost: 42
+Avg frame loss rate (f/s): 14.000000
+Playback length (ms): 3520
+Session length (ms): 5225
+==============End time: Mon Nov 03 00:36:42 PST 2014==============
+
+F
+==============Start time: Mon Nov 03 00:39:35 PST 2014==============
+ID: 539618, m
+Total requests: 3
+Total frames: 226
+Avg framerate (f/s): 11.894737
+Frames out of order: 1
+Avg frame out order rate (f/s): 0.052632
+Frames lost: 1
+Avg frame loss rate (f/s): 0.052632
+Playback length (ms): 19700
+Session length (ms): 23635
+==============End time: Mon Nov 03 00:39:59 PST 2014==============
+
+G
+==============Start time: Mon Nov 03 00:40:24 PST 2014==============
+ID: 967505, m
+Total requests: 3
+Total frames: 187
+Avg framerate (f/s): 9.842105
+Frames out of order: 34
+Avg frame out order rate (f/s): 1.789474
+Frames lost: 8
+Avg frame loss rate (f/s): 0.421053
+Playback length (ms): 19760
+Session length (ms): 24145
+==============End time: Mon Nov 03 00:40:48 PST 2014==============
+
+H
+==============Start time: Mon Nov 03 00:41:05 PST 2014==============
+ID: 754345, m
+Total requests: 3
+Total frames: 234
+Avg framerate (f/s): 29.250000
+Frames out of order: 4
+Avg frame out order rate (f/s): 0.500000
+Frames lost: 4
+Avg frame loss rate (f/s): 0.500000
+Playback length (ms): 8640
+Session length (ms): 10724
+==============End time: Mon Nov 03 00:41:16 PST 2014==============
