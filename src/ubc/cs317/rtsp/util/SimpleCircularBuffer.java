@@ -26,7 +26,7 @@ public class SimpleCircularBuffer<T> {
    public void add(T elem) {
       buf[tail] = elem;
       tail = (tail + 1) % buf.length;
-      if (len <= buf.length) {
+      if (len < buf.length) {
          len++;
       }
    }
