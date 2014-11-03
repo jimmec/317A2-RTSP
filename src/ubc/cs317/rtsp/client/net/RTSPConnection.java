@@ -213,7 +213,7 @@ public class RTSPConnection {
       } catch (SocketTimeoutException e2) {
          // Do nothing on timeouts
       } catch (IOException e) {
-         e.printStackTrace();
+         // e.printStackTrace();
       }
    }
 
