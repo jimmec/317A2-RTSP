@@ -125,6 +125,8 @@ public class RTSPConStats {
          System.out.println(String.format("Avg framerate (f/s): %f", (double) s.framesPlayed
                / (s.playbackLength / 1000)));
          System.out.println(String.format("Frames out of order: %d", s.framesOutOfOrder));
+         System.out.println(String.format("Avg frame out order rate (f/s): %f", (double) s.framesOutOfOrder
+               / (s.playbackLength / 1000)));
          System.out.println(String.format("Frames lost: %d", s.framesLost));
          System.out.println(String.format("Avg frame loss rate (f/s): %f", (double) s.framesLost
                / (s.playbackLength / 1000)));
