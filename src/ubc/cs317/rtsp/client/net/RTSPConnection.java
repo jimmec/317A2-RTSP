@@ -171,6 +171,7 @@ public class RTSPConnection {
          RTSPResponse resp = RTSPResponse.readRTSPResponse(rtspReader);
          checkRespSuccessful(resp);
          startRTPTimer();
+         stat.playStart();
          setState(State.PLAYING);
       } catch (IOException e) {
          throw new RTSPException("Failed to read PLAY request response: " + e.getMessage(), e);
@@ -208,6 +209,7 @@ public class RTSPConnection {
          dataSocket.receive(packet);
          Frame frame = parseRTPPacket(packet.getData(), packet.getLength());
          session.processReceivedFrame(frame);
+         stat.newFrame(frame);
       } catch (SocketTimeoutException e2) {
          // Do nothing on timeouts
       } catch (IOException e) {
@@ -234,6 +236,7 @@ public class RTSPConnection {
          RTSPResponse resp = RTSPResponse.readRTSPResponse(rtspReader);
          checkRespSuccessful(resp);
          rtpTimer.cancel();
+         stat.playPause();
          setState(State.READY);
       } catch (IOException e) {
          throw new RTSPException("Cannot send PAUSE request: " + e.getMessage(), e);
@@ -261,7 +264,9 @@ public class RTSPConnection {
          sendCommand("TEARDOWN " + sessionVid, sessionId, null);
          RTSPResponse resp = RTSPResponse.readRTSPResponse(rtspReader);
          checkRespSuccessful(resp);
+         stat.setRequestCount(cseq);
          rtpTimer.cancel();
+         stat.endSession();
          dataSocket.close();
          dataSocket = null;
          setState(State.INIT);
@@ -345,10 +350,10 @@ public class RTSPConnection {
       // first 7bits
       byte payloadType = (byte) (packet[0] >>> 1);
       // next 16bits Big endian
-      short sequenceNumber = (byte) ((packet[0] << 7 | packet[1] >>> 1) | (packet[1] << 7 | packet[2] >>> 1));
+      short sequenceNumber = (byte) (((packet[0] << 7 | packet[1] >>> 1) << 8) | (packet[1] << 7 | packet[2] >>> 1));
       // next 32bits Big endian
-      int timestamp = (packet[2] << 7 | packet[3] >>> 1) | (packet[3] << 7 | packet[4] >>> 1)
-            | (packet[4] << 7 | packet[5] >>> 1) | (packet[5] << 7 | packet[6] >>> 1);
+      int timestamp = ((packet[2] << 7 | packet[3] >>> 1) << 24) | ((packet[3] << 7 | packet[4] >>> 1) << 16)
+            | ((packet[4] << 7 | packet[5] >>> 1) << 8) | (packet[5] << 7 | packet[6] >>> 1);
 
       return new Frame(payloadType, marker, sequenceNumber, timestamp, packet, 12, length - 12);
    }

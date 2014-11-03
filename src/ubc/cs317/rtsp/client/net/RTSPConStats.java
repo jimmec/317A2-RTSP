@@ -19,6 +19,7 @@ public class RTSPConStats {
    private List<SessionStat> sessions;
    private SimpleCircularBuffer<Short> recentFrameSeqs;
    private SimpleCircularBuffer<Integer> recentFrameTimestamps;
+   private SessionStat currSesh;
 
    public RTSPConStats() {
       sessions = new ArrayList<SessionStat>();
@@ -35,23 +36,31 @@ public class RTSPConStats {
     *           name of the video file being requested for this session.
     */
    public void newSession(String id, String vidName) {
-      sessions.add(new SessionStat(id, vidName));
+      SessionStat sesh = new SessionStat(id, vidName);
+      sessions.add(sesh);
+      currSesh = sesh;
+      recentFrameSeqs = new SimpleCircularBuffer<Short>(Short.class, 10);
+      recentFrameTimestamps = new SimpleCircularBuffer<Integer>(Integer.class, 10);
    }
 
+   /**
+    * Call this when teardown is called.
+    */
    public void endSession() {
-      latest().finalize();
+      currSesh.finalize();
+      currSesh = null;
    }
 
    public void playStart() {
-      latest().startPlay();
+      currSesh.startPlay();
    }
 
    public void playPause() {
-      latest().pausePlay();
+      currSesh.pausePlay();
    }
 
    public void setRequestCount(int count) {
-      latest().cseq = count;
+      currSesh.cseq = count;
    }
 
    /**
@@ -61,14 +70,15 @@ public class RTSPConStats {
     *           the newest processed Frame.
     */
    public void newFrame(Frame f) {
-      latest().framesPlayed++;
-   }
-
-   private SessionStat latest() {
-      if (sessions.size() < 1) {
-         throw new IllegalStateException();
-      }
-      return sessions.get(sessions.size());
+      recentFrameSeqs.add(f.getSequenceNumber());
+      recentFrameTimestamps.add(f.getTimestamp());
+      Short[] sView = recentFrameSeqs.getView();
+      Integer[] tView = recentFrameTimestamps.getView();
+      currSesh.framesPlayed++;
+      int n = sView.length;
+      // if (n >= 2 && sView[n - 2] != (1 << 16) - 1 && sView[n - 2] + 1 != sView[n - 1]) {
+      // currSesh.framesOutOfOrder++;
+      // }
    }
 
    /**

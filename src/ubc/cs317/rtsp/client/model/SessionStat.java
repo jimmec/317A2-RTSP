@@ -26,19 +26,19 @@ public class SessionStat {
       this.id = id;
       videoName = vidName;
       startTime = new Date();
-      timer = new Timer();
    }
 
    /**
     * Start a timer to update the time video has actually been playing via 10ms intervals
     */
    public void startPlay() {
+      timer = new Timer();
       timer.schedule(new TimerTask() {
          @Override
          public void run() {
-            playbackLength += 10;
+            playbackLength += 20;
          }
-      }, 10);
+      }, 20, 20);
    }
 
    /**
